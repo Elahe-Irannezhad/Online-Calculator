@@ -1,6 +1,9 @@
 from django.http import HttpResponse
 from django.views.decorators.http import require_GET
+from django.contrib.auth.decorators import login_required
+from .models import UserAction
 
+@login_required
 def calculate(request):
 
     n1 = int(request.GET.get('n1'))
@@ -27,5 +30,8 @@ def calculate(request):
 
     else:
         return HttpResponse("Invalid Operator.")
+    
+    actionRecord = f"User Performed {op}."
+    userAction = UserAction.objects.create(user = request.user, action = actionRecord)
 
-    return HttpResponse(f"Result of {n1} {operator} {n2} is {result}.")
+    return HttpResponse(f'{n1} {operator} {n2} = {result}')
